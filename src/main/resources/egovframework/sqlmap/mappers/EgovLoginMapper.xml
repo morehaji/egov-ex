@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.let.uat.uia.service.impl.EgovLoginMapper">
+
+    <!-- 일반 회원 등록 -->
+    <insert id="insertGnrMber" parameterType="egovframework.let.uat.uia.service.GnrMberVO">
+        INSERT INTO LETTNGNRLMBER (
+            MBER_ID,
+            PASSWORD,
+            PASSWORD_HINT,
+            PASSWORD_CNSR,
+            MBER_NM,
+            SEXDSTN_CODE,
+            ZIP,
+            ADRES,
+            DETAIL_ADRES,
+            MBER_EMAIL_ADRES,
+            MBTLNUM,
+            GROUP_ID,
+            ESNTL_ID,
+            SBSCRB_DE
+        ) VALUES (
+            #{mberId},
+            #{password},
+            #{passwordHint},
+            #{passwordCnsr},
+            #{mberNm},
+            #{sexdstnCode},
+            #{zip},
+            #{adres},
+            #{detailAdres},
+            #{mberEmailAdres},
+            #{mbtlnum},
+            #{groupId},
+            #{esntlId},
+            #{sbscrbDe}
+        )
+    </insert>
+
+</mapper>

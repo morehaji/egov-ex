@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="egovframework.let.qna.service.impl.QnaMapper">
+	
+	<!-- Qna 게시글 리스트 조회 -->
+	<select id="selectQnaList" parameterType="map" resultType="egovframework.let.qna.service.QnaBoardVO">
+	    SELECT * FROM (
+	        SELECT ROWNUM AS RNUM, A.* FROM (
+	            SELECT
+	                QA_ID, QA_TITLE, QA_CONTENT,
+	                WRITER_ID, WRITER_NAME, REG_DATE,
+	                READ_COUNT, DEL_YN
+	            FROM LETTNQNA
+	            WHERE DEL_YN = 'N'
+	            <choose>
+	                <when test="searchSelect == '1' and stDate != null and stDate != ''">
+	                    AND QA_TITLE LIKE '%' || #{stDate} || '%'
+	                </when>
+	                <when test="searchSelect == '2' and stDate != null and stDate != ''">
+	                    AND (QA_TITLE LIKE '%' || #{stDate} || '%' OR QA_CONTENT LIKE '%' || #{stDate} || '%')
+	                </when>
+	                <when test="searchSelect == '3' and stDate != null and stDate != ''">
+	                    AND WRITER_NAME LIKE '%' || #{stDate} || '%'
+	                </when>
+	                <!-- searchSelect가 "0"이거나 stDate가 빈 값이면 조건 없음 -->
+	                <otherwise>
+	                    <!-- 아무 조건 없음 -->
+	                </otherwise>
+	            </choose>
+	            ORDER BY QA_ID DESC
+	        ) A
+	        WHERE ROWNUM &lt;= #{firstIndex} + #{recordCountPerPage}
+	    )
+	    WHERE RNUM &gt; #{firstIndex}
+	</select>
+
+    <!-- 전체 게시글 수 -->
+    <select id="selectQnaListTotalCount" parameterType="map" resultType="int">
+	    SELECT COUNT(*) FROM LETTNQNA
+	    WHERE DEL_YN = 'N'
+	    <choose>
+	        <when test="searchSelect == '1' and stDate != null and stDate != ''">
+	            AND QA_TITLE LIKE '%' || #{stDate} || '%'
+	        </when>
+	        <when test="searchSelect == '2' and stDate != null and stDate != ''">
+	            AND (QA_TITLE LIKE '%' || #{stDate} || '%' OR QA_CONTENT LIKE '%' || #{stDate} || '%')
+	        </when>
+	        <when test="searchSelect == '3' and stDate != null and stDate != ''">
+	            AND WRITER_NAME LIKE '%' || #{stDate} || '%'
+	        </when>
+	        <!-- 전체 조건일 경우 -->
+	        <otherwise>
+	            <!-- 필터 없음 -->
+	        </otherwise>
+	    </choose>
+	</select>
+
+    <!-- QnA 게시글 등록 -->
+    <insert id="insertQA" parameterType="egovframework.let.qna.service.QnaBoardVO">
+        INSERT INTO LETTNQNA
+        (
+            QA_ID,
+            QA_TITLE,
+            QA_CONTENT,
+            WRITER_ID,
+            WRITER_NAME,
+            REG_DATE,
+            READ_COUNT,
+            DEL_YN
+        )
+        VALUES
+        (
+            LETTNQNA_SEQ.NEXTVAL,
+            #{qaTitle},
+            #{qaContent},
+            #{writerId},
+            #{writerName},
+            SYSDATE,
+            0,     -- 등록 시 조회수 0
+            'N'	   -- 삭제여부 N
+        )
+    </insert>
+
+    <!-- QnA 게시글 상세 조회 -->
+    <select id="selectQnaDetail" parameterType="int" resultType="egovframework.let.qna.service.QnaBoardVO">
+         SELECT 
+            QA_ID,
+            QA_TITLE,
+            QA_CONTENT,
+            WRITER_ID,
+            WRITER_NAME,
+            REG_DATE,
+            READ_COUNT,
+            MOD_DATE,
+            DEL_YN
+        FROM LETTNQNA
+        WHERE QA_ID = #{qaId}
+          AND DEL_YN = 'N'
+    </select>
+
+	<update id="updateReadCount" parameterType="int">
+	    UPDATE LETTNQNA
+	    SET READ_COUNT = NVL(READ_COUNT, 0) + 1
+	    WHERE QA_ID = #{qaId}
+	      AND DEL_YN = 'N'
+	</update>
+
+
+	<!-- qna 게시글 삭제 -->
+	<update id="deleteQA" parameterType="int">
+	    UPDATE LETTNQNA
+	    SET DEL_YN = 'Y'
+	    WHERE QA_ID = #{qaId}
+	</update>
+	
+	<!-- qna 게시글 수정 -->
+	<update id="updateQA" parameterType="egovframework.let.qna.service.QnaBoardVO">
+	    UPDATE LETTNQNA
+	    SET 
+	        QA_TITLE = #{qaTitle},
+	        QA_CONTENT = #{qaContent},
+	        WRITER_ID = #{writerId},
+	        WRITER_NAME = #{writerName},
+	        MOD_DATE = SYSDATE
+	    WHERE QA_ID = #{qaId}
+	      AND DEL_YN = 'N'
+	</update>
+</mapper>
