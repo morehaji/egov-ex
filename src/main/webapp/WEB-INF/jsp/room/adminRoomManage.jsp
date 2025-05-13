@@ -7,21 +7,22 @@
 <meta charset="UTF-8">
 <title>회의실 예약 관리</title>
 <link href="<c:url value='/'/>css/common.css" rel="stylesheet" type="text/css">
-<style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-    th, td {
-        padding: 12px;
-        border: 1px solid #ddd;
-        text-align: center;
-    }
-    th {
-        background-color: #f2f2f2;
-    }
-</style>
+<script type="text/javascript">
+	function fnPageMove(pageNo) {
+		var form = document.createElement("form");
+		form.method = "post";
+		form.action = "<c:url value='/room/adminRoomManage.do'/>";
+		
+		var input = document.createElement("input");
+		input.type = "hidden";
+		input.name = "pageIndex";
+		input.value = pageNo;
+		form.appendChild(input);
+		
+		document.body.appendChild(form);
+		form.submit();
+	}
+</script>
 </head>
 <body>
 <div id="wrap">
@@ -85,9 +86,26 @@
                     </c:if>
                 </tbody>
             </table>
+            <ui:pagination paginationInfo="${paginationInfo}" type="image" jsFunction="fnPageMove" />
+            
 
         </div>
     </div>
 </div>
 </body>
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+</style>
 </html>
