@@ -40,10 +40,11 @@
 				    <thead>
 				        <tr>
 				            <th>회의실</th>
-				            <th>시작 시간</th>
-				            <th>종료 시간</th>
+				            <th>대여 시작 시간</th>
+				            <th>대여 종료 시간</th>
 				            <th>목적</th>
 				            <th>상태</th>
+				            <th>예약일시</th>
 				            <th></th>
 				        </tr>
 				    </thead>
@@ -54,7 +55,16 @@
 				                <td><fmt:formatDate value="${resv.startTime}" pattern="yyyy-MM-dd HH:mm" /></td>
 				                <td><fmt:formatDate value="${resv.endTime}" pattern="yyyy-MM-dd HH:mm" /></td>
 				                <td><c:out value="${resv.purpose}" /></td>
-				                <td><c:out value="${resv.status}" /></td>
+				                <td>
+					                <c:choose>
+								        <c:when test="${resv.status == 'APPLIED'}">신청</c:when>
+								        <c:when test="${resv.status == 'APPROVED'}">승인</c:when>
+								        <c:when test="${resv.status == 'REJECTED'}">반려</c:when>
+								        <c:when test="${resv.status == 'CANCELLED'}">취소</c:when>
+								        <c:otherwise><c:out value="${resv.status}" /></c:otherwise>
+								    </c:choose>
+				                </td>
+				                <td><fmt:formatDate value="${resv.regDate}" pattern="yyyy-MM-dd HH:mm" /></td>
 				                <td>
 								  <c:choose>
 								    <c:when test="${resv.status eq 'CANCELLED'}">
@@ -63,7 +73,11 @@
 								    <c:otherwise>
 								      <form action="<c:url value='/room/cancelReservation.do'/>" method="post" style="display:inline;">
 								        <input type="hidden" name="resvId" value="${resv.resvId}" />
-								        <button type="submit" onclick="return confirm('정말 취소하시겠습니까?')">취소</button>
+								        <button type="submit" 
+								        	class="cancel-btn"
+									        <c:if test="${resv.status eq 'REJECTED'}">disabled</c:if> 
+									        onclick="return confirm('정말 취소하시겠습니까?')">취소
+									    </button>
 								      </form>
 								    </c:otherwise>
 								  </c:choose>
@@ -141,6 +155,10 @@ td[colspan="5"] {
 }
 .cancel-btn:hover {
 	background-color: #c0392b;
+}
+.cancel-btn:disabled {
+	background-color: #ccc;
+	cursor: not-allowed;
 }
 </style>
 </html>

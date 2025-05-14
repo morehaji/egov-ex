@@ -1,5 +1,6 @@
 package egovframework.let.room.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,4 +52,30 @@ public class EgovRoomServiceImpl implements EgovRoomService {
 		egovRoomMapper.updateReservationStatusToCancelled(resvId);
 	}
 	
+	// 관리자 - 예약 승인 / 반려
+	@Override
+	public void updateReservationStatus(int resvId, String status) {
+		
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("resvId", resvId);
+		paramMap.put("status", status);
+		egovRoomMapper.updateReservationStatus(paramMap);
+	}
+	
+	// 관리자 - 회의실 등록 
+	@Override
+	public void insertRoom(EgovMeetingRoomVO roomVO) throws Exception {
+	    egovRoomMapper.insertRoom(roomVO);
+	}
+	
+	@Override
+	public List<EgovMeetingRoomVO> selectAdminRoomList() {
+		return egovRoomMapper.selectAdminRoomList();
+	}
+	
+	// 예약현황 달력 
+	@Override
+    public List<EgovRoomReservationVO> getReservationsByRoomId(Long roomId) throws Exception {
+        return egovRoomMapper.selectReservationsByRoomId(roomId);
+    }
 }

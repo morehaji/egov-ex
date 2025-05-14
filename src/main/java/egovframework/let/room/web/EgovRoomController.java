@@ -1,20 +1,26 @@
 package egovframework.let.room.web;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import egovframework.com.cmm.LoginVO;
 import egovframework.let.room.service.EgovMeetingRoomVO;
@@ -75,6 +81,28 @@ public class EgovRoomController {
 	}
 
 	
+	// 예약현황 달력 
+	@ResponseBody
+	@RequestMapping(value = "/room/calendarEvents", method = RequestMethod.GET)
+	public List<Map<String, Object>> getCalendarEvents(@RequestParam("roomId") Long roomId) throws Exception {
+	    List<EgovRoomReservationVO> reservations = egovRoomService.getReservationsByRoomId(roomId);
+
+	    List<Map<String, Object>> events = new ArrayList<>();
+	    for (EgovRoomReservationVO vo : reservations) {
+	        Map<String, Object> event = new HashMap<>();
+	        event.put("id", vo.getResvId());
+	        event.put("title", vo.getPurpose());
+	        event.put("start", vo.getStartTime()); // ISO 8601 포맷 자동 처리됨
+	        event.put("end", vo.getEndTime());
+	        event.put("status", vo.getStatus());
+	        events.add(event);
+	    }
+
+	    return events;
+	}
+	
+	
+	
 	// 내 예약 
 	@RequestMapping("/room/myReservations.do")
 	public String myReservations(HttpServletRequest request, ModelMap model) {
@@ -86,6 +114,8 @@ public class EgovRoomController {
 	    
 		return "room/myReservations";
 	}
+	
+	
 	// 예약 취소 
 	@RequestMapping(value = "/room/cancelReservation.do", method = RequestMethod.POST)
 	public String cancelReservation(@RequestParam("resvId") int resvId) {
@@ -101,6 +131,41 @@ public class EgovRoomController {
 	    return "room/adminRoomManage"; // /WEB-INF/jsp/room/adminRoomManage.jsp
 	}
 	
+	// 관리자 - 예약 승인 / 반려
+	@RequestMapping(value = "/room/updateReservationStatus.do", method = RequestMethod.POST)
+	public String updateReservationStatus(@RequestParam("resvId") int resvId,
+            @RequestParam("status") String status,
+            HttpServletRequest request) {
+		
+		egovRoomService.updateReservationStatus(resvId, status);
+		return "redirect:/room/adminRoomManage.do";
+	}
+	
+	// 회의실 생성관리 목록
+	@RequestMapping(value = "/room/adminRoomCreate.do")
+	public String adminRoomCreate(Model model) throws Exception {
+		List<EgovMeetingRoomVO> roomList = egovRoomService.selectAdminRoomList(); // 전체 회의실 조회
+		model.addAttribute("roomList", roomList);
+		return "room/adminRoomCreate"; // JSP 경로
+	}
+	
+	// 회의실 등록폼
+	@RequestMapping(value = "/room/adminRoomCreateForm.do")
+	public String adminRoomCreateForm() {
+		return "room/adminRoomCreateForm";
+	}
+	
+	// 회의실 등록
+	@RequestMapping(value = "/room/insertRoom.do", method = RequestMethod.POST)
+	public String insertRoom(@ModelAttribute EgovMeetingRoomVO roomVO) throws Exception {
+		roomVO.setDelYn("N"); // 기본값
+		if (roomVO.getUseYn() == null) {
+	        roomVO.setUseYn("Y"); // 기본값으로 사용 설정
+	    }
+		egovRoomService.insertRoom(roomVO);
+		return "redirect:/room/adminRoomCreate.do"; // 등록 후 목록으로 이동
+	}
+	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 	    // HTML datetime-local 형식 대응 ("T" 포함)
@@ -108,4 +173,6 @@ public class EgovRoomController {
 	    dateFormat.setLenient(false);
 	    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
+	
+	
 }

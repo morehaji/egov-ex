@@ -14,9 +14,28 @@
 <title>회의실 예약</title>
 <link href="<c:url value='/'/>css/common.css" rel="stylesheet"
 	type="text/css">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 </head>
 <script>
-	
+document.addEventListener('DOMContentLoaded', function() {
+  const roomId = '${room.roomId}';  // JSTL로 삽입
+  const calendarEl = document.getElementById('calendar');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek'
+    },
+    events: '<c:url value="/room/calendarEvents"/>?roomId=${room.roomId}',  // 문자열 템플릿 사용
+    timeZone: 'local',
+    locale: 'ko'
+  });
+
+  calendar.render();
+});
 </script>
 <body>
 <c:out value="${param.startTime}"/><br/>
@@ -41,7 +60,10 @@
 			<!-- //좌측메뉴 끝 -->
 			<div id="content">
 				<h2>${room.roomName} 예약</h2>
-
+				
+				<!-- 날짜 선택 + 예약 현황 -->
+				<div id="calendar" style="margin-top: 40px;"></div>
+				
 				<form action="<c:url value='/room/submitReservation.do'/>" method="post">
 					<input type="hidden" name="roomId" value="${room.roomId}" /> 
 					<label>예약자 ID</label><input type="text" name="userId" value="${sessionScope.LoginVO.id}" readonly />
@@ -88,13 +110,12 @@ form {
 }
 
 
-input[type="text"], input[type="datetime-local"] {
+input[type="text"], input[type="datetime-local"], input[type="date"] {
 	padding: 10px;
 	border: 1px solid #ccc;
 	border-radius: 8px;
 	font-size: 16px;
 }
-
 button[type="submit"] {
 	padding: 12px;
 	background-color: #4CAF50;
@@ -105,19 +126,28 @@ button[type="submit"] {
 	cursor: pointer;
 	transition: background-color 0.3s;
 }
-
 button[type="submit"]:hover {
 	background-color: #45a049;
 }
-
 label {
 	font-weight: bold;
 	margin-bottom: 3px;
 	margin-top: 20px;
 }
-
-br {
-	display: none;
+#timeSlotsContainer > div {
+	padding: 8px;
+	margin: 5px 0;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	text-align: center;
+}
+.slot-reserved {
+	background-color: #ddd;
+	color: #888;
+}
+.slot-available {
+	background-color: #c8f7c5;
+	color: #000;
 }
 </style>
 </html>

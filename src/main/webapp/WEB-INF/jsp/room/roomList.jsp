@@ -14,6 +14,10 @@
 <title>회의실 예약</title>
 <link href="<c:url value='/'/>css/common.css" rel="stylesheet"
 	type="text/css">
+
+<script>
+
+</script>
 </head>
 <body>
 	<!-- 전체 레이어 시작 -->

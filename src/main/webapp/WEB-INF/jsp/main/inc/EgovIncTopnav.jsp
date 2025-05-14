@@ -50,7 +50,7 @@
        if(loginVO != null){ 
     %>
     <li><a href="#LINK" onclick="javascript:fn_main_headPageAction('51','cop/smt/sim/EgovIndvdlSchdulManageMonthList.do')" >사이트관리(관리자)</a></li>
-    <li><a href="#LINK" onclick="javascript:fn_main_headPageAction('63','room/adminRoomManage.do')" >회의실 관리(관리자)</a></li>
+    <li><a href="#LINK" onclick="javascript:fn_main_headPageAction('71','room/adminRoomManage.do')" >회의실 관리(관리자)</a></li>
     <%
        }
     %>

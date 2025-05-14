@@ -78,9 +78,18 @@ String menuNo = ((String)session.getAttribute("menuNo")!=null)?(String)session.g
 		<li class="leftmenu_dept01">
 			<a href="javascript:fn_main_headPageAction('61','room/roomList.do')">회의실 예약</a>
 			<ul>
-				<li class="dept02"><a href="javascript:fn_main_headPageAction('61','room/roomList.do')">예약현황</a></li>
+				<li class="dept02"><a href="javascript:fn_main_headPageAction('61','room/roomList.do')">회의실 목록</a></li>
 				<li class="dept02"><a href="javascript:fn_main_headPageAction('62','room/myReservations.do')">내 예약</a></li>
 <!-- 				<li class="dept02"><a href="javascript:fn_main_headPageAction('63','room/adminRoomManage.do')">예약관리(관리자)</a></li> -->
+			</ul>
+		</li>
+		<% } %>
+		<% if (menuNo.indexOf("7") == 0) { %>
+		<li class="leftmenu_dept01">
+			<a href="javascript:fn_main_headPageAction('71','room/roomList.do')">회의실 관리</a>
+			<ul>
+				<li class="dept02"><a href="javascript:fn_main_headPageAction('71','room/adminRoomManage.do')">예약관리</a></li>
+				<li class="dept02"><a href="javascript:fn_main_headPageAction('72','/room/adminRoomCreate.do')">회의실 생성 관리</a></li>
 			</ul>
 		</li>
 		<% } %>

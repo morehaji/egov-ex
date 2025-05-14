@@ -14,8 +14,11 @@ public class EgovMeetingRoomVO implements Serializable {
     private String equipmentInfo;     // 비품 정보
     private String useYn;             // 사용 여부 (Y/N)
     private Date regDate;             // 등록일자
+    private String delYn;			  // 삭제여부
 
-    // Getter / Setter
+    
+
+	// Getter / Setter
     public int getRoomId() {
         return roomId;
     }
@@ -71,4 +74,12 @@ public class EgovMeetingRoomVO implements Serializable {
     public void setRegDate(Date regDate) {
         this.regDate = regDate;
     }
+    
+    public String getDelYn() {
+		return delYn;
+	}
+
+	public void setDelYn(String delYn) {
+		this.delYn = delYn;
+	}
 }
